@@ -10,9 +10,7 @@
 html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);overscroll-behavior:none}
 button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-.app{height:100%;display:grid;grid-template-columns:1fr var(--sw,300px);grid-template-rows:auto 1fr;grid-template-areas:"bar bar" "st sd"}
-.app.l{grid-template-columns:var(--sw,300px) 1fr;grid-template-areas:"bar bar" "sd st"}
-.app.l .sd{border-left:0;border-right:1px solid var(--ln)}
+.app{height:100%;display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr;grid-template-areas:"bar" "st"}
 .bar{grid-area:bar;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--ln)}
 .bar h1{font-size:16px;margin:0 auto 0 0}
 .b{background:none;border:1px solid var(--ln);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px}
@@ -27,7 +25,7 @@ button,input,select{font:inherit;color:inherit}
 .menu{position:absolute;top:calc(100% + 4px);left:0;z-index:40;background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px;min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
 .menu .b{text-align:left;white-space:nowrap}
 .menu .b.on{background:var(--ac);border-color:var(--ac);color:#fff}
-#stage{grid-area:st;display:flex;overflow:auto;background:var(--stg,#2b2c30);touch-action:none}
+#stage{grid-area:st;display:flex;overflow:auto;background:var(--stg,#2b2c30);touch-action:none;padding:40px}
 #board{margin:auto;position:relative;box-shadow:0 4px 24px rgba(0,0,0,.5);line-height:0}
 #ov{position:absolute;left:0;top:0;pointer-events:none}
 #view{cursor:none;touch-action:none}
@@ -62,50 +60,47 @@ dialog{background:var(--pn);color:var(--tx);border:1px solid var(--ln);border-ra
 dialog::backdrop{background:rgba(0,0,0,.55)}
 dialog h2{font-size:16px;margin:0 0 10px}
 #tc{width:160px;height:160px;background:#fff;border-radius:8px;touch-action:none;cursor:crosshair}
-@media (max-width:820px){
- .app,.app.l{grid-template-columns:1fr;grid-template-rows:auto 1fr 42vh;grid-template-areas:"bar" "st" "sd"}
- .app.l .sd{border-right:0;border-top:1px solid var(--ln)}
- .sd{border-left:0;border-top:1px solid var(--ln)}
-}
+@media (max-width:820px){.menu.panel{width:min(94vw,340px)}}
+.dd{border:0;padding:0}
+.dd>summary.live{background:#d23b3b;border-color:#d23b3b;color:#fff}
+.menu.panel{display:block;width:340px;max-width:94vw;max-height:calc(100vh - 80px);overflow:auto;padding:10px 12px}
+.menu.panel .b{white-space:normal}
+.frames{display:flex;flex-wrap:wrap;gap:6px;max-height:160px;overflow:auto;margin:8px 0}
+.fth{position:relative;border:2px solid var(--ln);border-radius:6px;cursor:pointer;padding:0;background:#000;line-height:0}
+.fth.on{border-color:var(--ac)}
+.fth span{position:absolute;left:2px;bottom:2px;background:rgba(0,0,0,.7);color:#fff;font-size:10px;line-height:1.2;padding:1px 4px;border-radius:4px}
 </style>
 </head>
 <body>
 <div class="app">
- <header class="bar">
-  <h1>Sketchpad Studio</h1>
-  <button class="b" id="undo">Undo</button><button class="b" id="redo">Redo</button><button class="b" id="fs">Full screen</button><details class="dd"><summary class="b on">Paint ▾</summary><div class="menu"><button class="b" data-t="brush" title="Brush (B)">Brush</button><button class="b" data-t="erase" title="Eraser (E)">Erase</button><button class="b" data-t="pick" title="Color picker (I, or Alt+click)">Pick</button><button class="b" data-t="bucket" title="Paint bucket (G)">Bucket</button><button class="b" data-t="grad" title="Gradient (A)">Gradient</button><button class="b" data-t="shape" title="Line, rectangle, ellipse (U)">Shape</button><button class="b" data-t="text" title="Text (T)">Text</button></div></details><details class="dd"><summary class="b">Select and move ▾</summary><div class="menu"><button class="b" data-t="selr" title="Rectangle select (M). Shift adds, Alt subtracts">Rect</button><button class="b" data-t="sele" title="Ellipse select (R)">Ellipse</button><button class="b" data-t="sell" title="Lasso select (L)">Lasso</button><button class="b" data-t="wand" title="Magic wand (W)">Wand</button><button class="b" data-t="move" title="Move layer or selection (V)">Move</button><button class="b" data-t="hand" title="Hand: drag to pan (H)">Hand</button></div></details><details class="dd"><summary class="b">Retouch ▾</summary><div class="menu"><button class="b" data-t="clone" title="Clone stamp (S). Alt+click sets the source">Clone</button><button class="b" data-t="smudge" title="Smudge">Smudge</button><button class="b" data-t="blurT" title="Blur brush">Blur</button><button class="b" data-t="sharpT" title="Sharpen brush">Sharpen</button><button class="b" data-t="dodge" title="Dodge: lighten">Dodge</button><button class="b" data-t="burn" title="Burn: darken">Burn</button></div></details>
-  <button class="b" id="cvs">Canvas size</button><button class="b" id="fit">Fit</button><details class="dd"><summary class="b">View ▾</summary><div class="menu"><button class="b" id="zi">Zoom in</button><button class="b" id="zo">Zoom out</button><button class="b" id="z1">Actual size</button><button class="b" id="vg">Toggle grid</button><label class="c" style="grid-column:1/-1">Grid size <input type="number" id="gs" value="50" min="5" max="500" style="width:70px"></label></div></details>
-  <button class="b" id="rec">● Record</button>
-  <button class="b" id="png">PNG</button><button class="b pri" id="pdf">PDF</button>
-  <button class="b" id="clr">Clear layer</button><button class="b" id="set">Settings</button>
- </header>
- <main id="stage"><div id="board"><canvas id="view"></canvas><canvas id="ov"></canvas></div></main>
- <input type="file" id="fi" accept="image/*" hidden>
- <aside class="sd">
-  <details open><summary>Brushes</summary>
+ <header class="bar"><details class="dd"><summary class="b">File ▾</summary><div class="menu panel"><div class="row"><button class="b" id="cvs" data-x>Canvas size</button><button class="b" id="png" data-x>Save PNG</button><button class="b pri" id="pdf" data-x>Save PDF</button></div><div class="row"><button class="b" id="rec">● Record timelapse</button><button class="b" id="set" data-x>Settings</button><button class="b" id="fs" data-x>Full screen</button></div>
+   <div class="f">Format</div><select id="ef"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option></select>
+   <label class="f" for="eq">Quality <span id="eqo">92</span></label><input type="range" id="eq" min="1" max="100" value="92">
+   <label class="f" for="es">Scale <span id="eso">100</span>%</label><input type="range" id="es" min="10" max="400" value="100">
+   <div class="row"><button class="b pri" id="exp">Export image</button><button class="b" id="eal">Every layer as PNG</button></div>
+   <div class="row"><button class="b" id="psv">Save project</button><button class="b" id="pop">Open project</button></div>
+  </div></details><details class="dd"><summary class="b">Edit ▾</summary><div class="menu panel"><div class="row"><button class="b" id="undo">Undo</button><button class="b" id="redo">Redo</button><button class="b" id="clr">Clear layer</button></div><div class="f">Ctrl+Z undoes, Ctrl+Shift+Z redoes.</div></div></details><details class="dd"><summary class="b">View ▾</summary><div class="menu panel"><div class="row"><button class="b" id="zo">−</button><span id="zp" style="min-width:52px;text-align:center">100%</span><button class="b" id="zi">+</button><button class="b" id="z1">100%</button><button class="b" id="fit">Fit</button></div><input type="range" id="zr" min="5" max="800" value="100" aria-label="Zoom"><div class="row"><button class="b" id="vg">Toggle grid</button><label class="c">Grid size <input type="number" id="gs" value="50" min="5" max="500" style="width:70px"></label></div><label class="c"><input type="checkbox" id="wz" checked>Mouse wheel zooms (otherwise Ctrl+wheel)</label><div class="f">Pan: hold Space and drag, drag with the middle mouse button, use two fingers on touch, or pick the Hand tool. Arrow keys nudge the Move tool.</div></div></details><details class="dd"><summary class="b on">Paint ▾</summary><div class="menu"><button class="b" data-t="brush" title="Brush (B)">Brush</button><button class="b" data-t="erase" title="Eraser (E)">Erase</button><button class="b" data-t="pick" title="Color picker (I, or Alt+click)">Pick</button><button class="b" data-t="bucket" title="Paint bucket (G)">Bucket</button><button class="b" data-t="grad" title="Gradient (A)">Gradient</button><button class="b" data-t="shape" title="Line, rectangle, ellipse (U)">Shape</button><button class="b" data-t="text" title="Text (T)">Text</button></div></details><details class="dd"><summary class="b">Select and move ▾</summary><div class="menu"><button class="b" data-t="selr" title="Rectangle select (M). Shift adds, Alt subtracts">Rect</button><button class="b" data-t="sele" title="Ellipse select (R)">Ellipse</button><button class="b" data-t="sell" title="Lasso select (L)">Lasso</button><button class="b" data-t="wand" title="Magic wand (W)">Wand</button><button class="b" data-t="move" title="Move layer or selection (V)">Move</button><button class="b" data-t="hand" title="Hand: drag to pan (H)">Hand</button></div></details><details class="dd"><summary class="b">Retouch ▾</summary><div class="menu"><button class="b" data-t="clone" title="Clone stamp (S). Alt+click sets the source">Clone</button><button class="b" data-t="smudge" title="Smudge">Smudge</button><button class="b" data-t="blurT" title="Blur brush">Blur</button><button class="b" data-t="sharpT" title="Sharpen brush">Sharpen</button><button class="b" data-t="dodge" title="Dodge: lighten">Dodge</button><button class="b" data-t="burn" title="Burn: darken">Burn</button></div></details><details class="dd"><summary class="b">Brushes ▾</summary><div class="menu panel">
    <label class="f" for="sz">Size <span id="szo">10</span></label><input type="range" id="sz" min="1" max="300" value="10">
    <label class="f" for="opa">Opacity <span id="opo">100%</span></label><input type="range" id="opa" min="1" max="100" value="100">
    <canvas id="pv" width="260" height="54" style="width:100%;border-radius:6px;margin-top:8px"></canvas>
    <div class="row"><input type="search" id="q" placeholder="Search 250+ brushes" aria-label="Search brushes"></div>
    <div id="bl"></div>
    <div class="row"><button class="b" id="nb">+ Create brush</button></div>
-  </details>
-  <details><summary>Brush editor</summary>
+  </div></details><details class="dd"><summary class="b">Brush editor ▾</summary><div class="menu panel">
    <div class="f" style="margin-top:0">Edits the selected brush live. Reset restores the preset.</div>
    <div id="ed"></div>
    <div class="row"><select id="esh" aria-label="Tip shape" style="width:auto"><option value="r">Round</option><option value="sq">Square</option><option value="ln">Line</option><option value="st">Star</option><option value="lf">Leaf</option><option value="ht">Heart</option><option value="tr">Triangle</option><option value="ri">Ring</option><option value="tip" disabled>Custom tip</option></select><select id="epr" aria-label="Pressure" style="width:auto"><option value="0">No pressure</option><option value="1">Pressure: size</option><option value="2">Pressure: flow</option><option value="3">Pressure: both</option></select></div>
    <div class="row"><label class="c"><input type="checkbox" id="efl">Follow stroke</label><label class="c"><input type="checkbox" id="erj">Random rotation</label></div>
    <div class="row"><button class="b" id="erst">Reset brush</button><button class="b pri" id="esv">Save as new brush</button></div>
-  </details>
-  <details><summary>Stroke settings</summary>
+  </div></details><details class="dd"><summary class="b">Stroke ▾</summary><div class="menu panel">
    <label class="f" for="bsm">Smoothing <span id="bsmo">50</span></label><input type="range" id="bsm" min="0" max="95" value="50">
    <label class="f" for="bps">Pressure sensitivity <span id="bpso">100</span></label><input type="range" id="bps" min="0" max="200" value="100">
    <div class="f">Stroke blend</div><select id="bm"><option value="source-over">Normal</option><option value="multiply">Multiply</option><option value="screen">Screen</option><option value="overlay">Overlay</option><option value="darken">Darken</option><option value="lighten">Lighten</option><option value="color-dodge">Color dodge</option><option value="color-burn">Color burn</option><option value="soft-light">Soft light</option><option value="hard-light">Hard light</option><option value="difference">Difference</option></select>
    <div class="f">Symmetry</div><select id="sym"><option value="">Off</option><option value="h">Mirror left-right</option><option value="v">Mirror top-bottom</option><option value="hv">Four-way mirror</option><option value="r">Radial</option></select>
    <label class="f" for="symn">Radial segments <span id="symno">6</span></label><input type="range" id="symn" min="2" max="16" value="6">
    <div class="f">Hold Shift and click to draw a straight line from your last stroke.</div>
-  </details>
-  <details open><summary>Tool options</summary>
+  </div></details><details class="dd"><summary class="b">Tool options ▾</summary><div class="menu panel">
+   <label class="c"><input type="checkbox" id="mva">Move tool moves every layer together</label>
    <label class="f" for="tol">Tolerance (wand, bucket) <span id="tolo">32</span></label><input type="range" id="tol" min="0" max="255" value="32">
    <label class="c" style="margin-top:8px"><input type="checkbox" id="sa">Sample all layers</label>
    <div class="row"><select id="shp" aria-label="Shape"><option>Line</option><option>Rectangle</option><option>Rounded rectangle</option><option>Ellipse</option><option>Polygon</option><option>Star</option></select><label class="c"><input type="checkbox" id="shf">Fill</label><label class="c"><input type="checkbox" id="shd">Dashed</label></div>
@@ -120,8 +115,7 @@ dialog h2{font-size:16px;margin:0 0 10px}
    <input type="text" id="fcus" placeholder="Or any installed font name" aria-label="Custom font" style="margin-top:6px">
    <div class="row"><label class="c">Size <input type="number" id="tsz" value="48" min="6" max="600" style="width:64px"></label><label class="c"><input type="checkbox" id="tb">Bold</label><label class="c"><input type="checkbox" id="tit">Italic</label></div>
    <div class="row"><select id="tal" aria-label="Alignment" style="width:auto"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select><label class="c">Outline <input type="number" id="tow" value="0" min="0" max="40" style="width:56px"></label><label class="c">Spacing <input type="number" id="tls" value="0" min="-5" max="60" style="width:56px"></label></div>
-  </details>
-  <details open><summary>Photo tools</summary>
+  </div></details><details class="dd"><summary class="b">Photo tools ▾</summary><div class="menu panel">
    <div class="f">Selection</div>
    <div class="row"><button class="b" id="sa1">All</button><button class="b" id="sn">None</button><button class="b" id="si">Invert</button><button class="b" id="sf">Feather</button><button class="b" id="sfl">Fill</button><button class="b" id="scl">Clear</button><button class="b" id="svc">Copy to layer</button><button class="b" id="svx">Cut to layer</button><button class="b" id="scr">Crop to selection</button><button class="b" id="sgr">Grow</button><button class="b" id="ssh">Shrink</button><button class="b" id="ssm">Smooth</button></div>
    <div class="f">Adjust and filter (live preview)</div>
@@ -139,8 +133,7 @@ dialog h2{font-size:16px;margin:0 0 10px}
    <div class="f">Layer</div>
    <div class="row"><button class="b" id="lfh">Flip H</button><button class="b" id="lfv">Flip V</button><button class="b" id="lt">Scale / rotate…</button></div>
    <div class="f">Shortcuts: Ctrl+A all, Ctrl+D deselect, Ctrl+Shift+I invert, Ctrl+J layer via copy, Delete clears, Alt+Backspace fills. You can also paste or drop an image onto the canvas.</div>
-  </details>
-  <details open><summary>Color</summary>
+  </div></details><details class="dd"><summary class="b">Color ▾</summary><div class="menu panel">
    <canvas id="sv" width="200" height="130" style="width:100%;border-radius:6px;cursor:crosshair;touch-action:none"></canvas>
    <input type="range" id="hue" min="0" max="360" value="0" aria-label="Hue">
    <div class="row"><input type="text" id="hex" maxlength="7" aria-label="Hex color"></div>
@@ -148,8 +141,7 @@ dialog h2{font-size:16px;margin:0 0 10px}
    <div class="row" id="hs"></div>
    <div class="f">Recent</div><div class="row" id="rc"></div>
    <div class="f">Palette <button class="b" id="ps" style="padding:3px 8px;font-size:11px">+ Save color</button></div><div class="row" id="pl"></div>
-  </details>
-  <details open><summary>Layers</summary>
+  </div></details><details class="dd"><summary class="b">Layers ▾</summary><div class="menu panel">
    <div class="row"><button class="b" id="la">+ Add</button><button class="b" id="ld">Copy</button><button class="b" id="lx">Delete</button><button class="b" id="lu">▲</button><button class="b" id="lv">▼</button><button class="b" id="lm">Merge down</button></div>
    <div id="ll"></div>
    <label class="f" for="lop">Layer opacity</label><input type="range" id="lop" min="0" max="100" value="100">
@@ -164,15 +156,10 @@ dialog h2{font-size:16px;margin:0 0 10px}
    <label class="f" for="lsa">Angle</label><input type="range" id="lsa" min="0" max="360" value="45">
    <div class="f">Alpha mask: paint reveals, eraser hides</div>
    <div class="row"><button class="b" id="m1">Add mask</button><button class="b" id="m2">Edit mask</button><button class="b" id="m3">Apply</button><button class="b" id="m4">Delete</button></div>
-  </details>
-   <details><summary>Export and project</summary>
-   <div class="f">Format</div><select id="ef"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option></select>
-   <label class="f" for="eq">Quality <span id="eqo">92</span></label><input type="range" id="eq" min="1" max="100" value="92">
-   <label class="f" for="es">Scale <span id="eso">100</span>%</label><input type="range" id="es" min="10" max="400" value="100">
-   <div class="row"><button class="b pri" id="exp">Export image</button><button class="b" id="eal">Every layer as PNG</button></div>
-   <div class="row"><button class="b" id="psv">Save project</button><button class="b" id="pop">Open project</button></div>
-  </details>
- </aside>
+  </div></details><details class="dd"><summary class="b">Animate ▾</summary><div class="menu panel"><div class="f" style="margin-top:0">Build a storyboard or a frame-by-frame animation, then export it as a video.</div><div class="row"><button class="b pri" id="af">Add frame</button><button class="b" id="ac">Add frame and clear layer</button><button class="b" id="ar">Replace frame</button></div><div id="fr" class="frames"></div><div class="row"><button class="b" id="al">◀</button><button class="b" id="arr">▶</button><button class="b" id="ad">Duplicate</button><button class="b" id="ax">Delete</button><button class="b" id="alo">Use as layer</button><button class="b" id="acl">Clear all</button></div><div class="row"><label class="c">Seconds <input type="number" id="fdur" value="1" min="0.05" max="60" step="0.05" style="width:70px"></label><input type="text" id="fcap" placeholder="Caption (optional)" aria-label="Caption" style="flex:1"></div><div class="row"><label class="c">New frames last <input type="number" id="fdd" value="1" min="0.05" max="60" step="0.05" style="width:64px"> s</label><button class="b" id="afd">Apply to all</button></div><div class="f">Transition</div><div class="row"><select id="atr" style="width:auto"><option value="none">Cut</option><option value="fade">Crossfade</option><option value="slide">Slide left</option><option value="up">Slide up</option><option value="zoom">Zoom and fade</option></select><label class="c">Length <input type="number" id="atd" value="0.4" min="0" max="3" step="0.1" style="width:60px"> s</label></div><div class="f">Video</div><div class="row"><select id="aw" style="width:auto"><option value="c">Same size as canvas</option><option value="1920x1080">1920 × 1080</option><option value="1280x720">1280 × 720</option><option value="1080x1080">1080 × 1080</option><option value="1080x1920">1080 × 1920</option></select><select id="afps" style="width:auto"><option value="30">30 fps</option><option value="24">24 fps</option><option value="15">15 fps</option></select></div><div class="row"><label class="c"><input type="checkbox" id="acap">Show captions</label><label class="c"><input type="checkbox" id="aon">Onion skin</label><input type="range" id="aoo" min="5" max="80" value="30" style="width:80px" aria-label="Onion skin strength"></div><canvas id="apv" width="320" height="180" style="width:100%;border-radius:6px;background:#000"></canvas><div class="row"><button class="b" id="apl">Play preview</button><button class="b pri" id="aex">Export video</button></div><div class="row"><button class="b" id="asb">Storyboard sheet (PNG)</button><button class="b" id="asp">Storyboard sheet (PDF)</button><button class="b" id="afp">Frames as PDF</button></div><div class="f" id="ast">No frames yet.</div></div></details><details class="dd"><summary class="b">Night Lights ▾</summary><div class="menu panel"><div class="f" style="margin-top:0">Sends your whole canvas, as a PDF, into the NightLights video editor.</div><div class="f">Video editor address</div><input type="text" id="nlu" aria-label="Video editor address"><div class="row"><label class="c"><input type="checkbox" id="nlf">Add storyboard frames as extra pages</label></div><div class="row"><label class="c"><input type="checkbox" id="nlp">Also send each page as a PNG image</label></div><div class="row"><label class="c"><input type="checkbox" id="nld" checked>Also download a copy of the PDF</label></div><div class="row"><button class="b pri" id="nls">Send to video editor</button></div><div class="f" id="nlt"></div></div></details></header>
+ <main id="stage"><div id="board"><canvas id="view"></canvas><canvas id="ov"></canvas></div></main>
+ <input type="file" id="fi" accept="image/*" hidden>
+ 
 </div>
 <div id="cur"></div>
 
@@ -199,8 +186,6 @@ dialog h2{font-size:16px;margin:0 0 10px}
 <input type="file" id="pf" accept=".json,application/json" hidden>
 <dialog id="sdg"><h2>Settings</h2>
  <div class="row"><label class="c" style="flex:1">Theme <select id="sth"><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="light">Light</option><option value="contrast">High contrast</option></select></label><label class="c">Accent <input type="color" id="sac" style="width:36px;height:26px;padding:0"></label></div>
- <div class="row"><label class="c" style="flex:1">Sidebar <select id="ssd"><option value="r">Right</option><option value="l">Left</option></select></label></div>
- <label class="f" for="ssw">Sidebar width <span id="sswo">300</span></label><input type="range" id="ssw" min="240" max="480" value="300">
  <div class="row"><label class="c">Paper <input type="color" id="spc" style="width:36px;height:26px;padding:0"></label><label class="c"><input type="checkbox" id="spo">Opaque paper</label><label class="c">Workspace <input type="color" id="ssg" style="width:36px;height:26px;padding:0"></label></div>
  <label class="c"><input type="checkbox" id="scu">Show brush ring cursor</label>
  <div class="f" style="margin-top:12px">Keyboard shortcuts: one key per tool, blank for none</div>
@@ -313,8 +298,8 @@ function setDoc(){
  if(SEL&&(SEL.width!==W||SEL.height!==H))SEL=null;
  zoom(Z);drawLayers();draw();ovDraw();
 }
-function zoom(z){Z=z;view.style.width=W*z+'px';view.style.height=H*z+'px';ov.style.width=view.style.width;ov.style.height=view.style.height}
-const fit=()=>zoom(Math.min(1,(stage.clientWidth-48)/W,(stage.clientHeight-48)/H));
+function zoom(z){Z=z;view.style.width=W*z+'px';view.style.height=H*z+'px';ov.style.width=view.style.width;ov.style.height=view.style.height;zoomUI()}
+const fit=()=>zoom(Math.min(1,(stage.clientWidth-100)/W,(stage.clientHeight-100)/H));
 
 /* ---------- compositing (layers, blend modes, clipping and alpha masks) ---------- */
 const draw=()=>{if(!dirty){dirty=1;requestAnimationFrame(()=>{dirty=0;compose()})}};
@@ -344,7 +329,9 @@ const pt=e=>{const r=view.getBoundingClientRect();return{x:(e.clientX-r.left)*W/
 function curMove(e){const bt=tool==='brush'||tool==='erase',d=Math.max(6,(bt?SZ*cur.p.s:/^(clone|smudge|blurT|sharpT|dodge|burn)$/.test(tool)?SZ:8)*Z);const c=$('#cur');c.style.display=ST.cur?'block':'none';c.style.width=c.style.height=d+'px';c.style.left=e.clientX+'px';c.style.top=e.clientY+'px'}
 function pickAt(e){compose();const p=pt(e),d=vx.getImageData(cl(p.x|0,0,W-1),cl(p.y|0,0,H-1),1,1).data;setColor('#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join(''))}
 view.onpointerdown=e=>{
- if(e.button>0||stk)return;
+ if(stk||sp)return;
+ if(e.button===1||spaceDown){startPan(e);e.preventDefault();return}
+ if(e.button>0)return;
  const bt=tool==='brush'||tool==='erase';
  if(tool==='pick'||(e.altKey&&bt)){pickAt(e);return}
  if(!bt){spDown(e);return}
@@ -370,7 +357,7 @@ function up(e){
 }
 view.onpointerup=up;view.onpointercancel=up;
 view.onpointerleave=()=>{if(!stk)$('#cur').style.display='none'};
-stage.addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();zoom(cl(Z*(e.deltaY<0?1.1:.9),.1,4))}},{passive:false});
+stage.addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey||ST.wz!==false){e.preventDefault();zoomAt(Z*(e.deltaY<0?1.1:1/1.1),e.clientX,e.clientY)}},{passive:false});
 
 /* ---------- brush UI ---------- */
 const openCats=new Set(['Pencil']);
@@ -530,6 +517,7 @@ const tol=()=>+$('#tol').value,sampleAll=()=>$('#sa').checked,rr=(a,p)=>[Math.mi
 
 function ovDraw(pre){
  ox.clearRect(0,0,ov.width,ov.height);
+ if(onion&&$('#aon').checked){ox.globalAlpha=+$('#aoo').value/100;ox.drawImage(onion,0,0,W,H);ox.globalAlpha=1}
  if(grid){ox.strokeStyle='rgba(140,140,140,.5)';ox.lineWidth=1/Z;ox.beginPath();for(let i=GS;i<W;i+=GS){ox.moveTo(i,0);ox.lineTo(i,H)}for(let i=GS;i<H;i+=GS){ox.moveTo(0,i);ox.lineTo(W,i)}ox.stroke()}
  if(SEL){
   const d=Math.max(1,1/Z),t=T4.getContext('2d'),u=T3.getContext('2d');
@@ -615,6 +603,11 @@ function spDown(e){
   const s=prompt('Text');
   if(s){const x=SC.getContext('2d'),fs=+$('#tsz').value||48,fam=$('#fcus').value.trim()||$('#font').value,ow=+$('#tow').value;x.clearRect(0,0,W,H);x.globalAlpha=1;x.fillStyle=color;x.strokeStyle=$('#c2').value;x.lineJoin='round';x.lineWidth=ow*2;x.font=`${$('#tit').checked?'italic ':''}${$('#tb').checked?'bold ':''}${fs}px ${fam}`;x.textBaseline='top';x.textAlign=$('#tal').value;x.letterSpacing=($('#tls').value||0)+'px';s.split('\n').forEach((ln,i)=>{const y=p.y+i*fs*1.2;if(ow)x.strokeText(ln,p.x,y);x.fillText(ln,p.x,y)});x.textAlign='left';x.letterSpacing='0px';commitSC()}
  }
+ else if(t==='move'&&$('#mva').checked){
+  sp={t:'moveall',a:p,s:cap(),L:layers.map(l=>({l,cv:l.cv,m:l.mask}))};
+  for(const o of sp.L){o.l.cv=mk(W,H);if(o.m)o.l.mask=mk(W,H)}
+  moveAllDraw(sp,0,0);
+ }
  else if(t==='move'){
   sp={t,a:p,before:lx.getImageData(0,0,W,H),base:cp(act.cv),s0:SEL&&cp(SEL)};
   if(sp.s0){sp.rest=cp(sp.base);let q=sp.rest.getContext('2d');q.globalCompositeOperation='destination-out';q.drawImage(sp.s0,0,0);sp.fl=cp(sp.base);q=sp.fl.getContext('2d');q.globalCompositeOperation='destination-in';q.drawImage(sp.s0,0,0)}
@@ -631,6 +624,7 @@ function spDown(e){
 function spMove(e){
  const s=sp,p=pt(e),t=s.t;
  if(t==='hand'){stage.scrollLeft=s.l-(e.clientX-s.x);stage.scrollTop=s.u-(e.clientY-s.y)}
+ else if(t==='moveall')moveAllDraw(s,p.x-s.a.x,p.y-s.a.y);
  else if(t==='move'){
   const dx=p.x-s.a.x,dy=p.y-s.a.y,x=act.cv.getContext('2d');x.clearRect(0,0,W,H);
   if(s.s0){x.drawImage(s.rest,0,0);x.drawImage(s.fl,dx,dy);const n=mk(W,H);n.getContext('2d').drawImage(s.s0,dx,dy);SEL=n;ovDraw()}
@@ -663,6 +657,7 @@ function spMove(e){
 function spUp(e){
  const s=sp,p=pt(e),t=s.t;sp=null;
  if(t==='hand')return;
+ if(t==='moveall'){pushH(sEntry(s.s));afterOp();return}
  if(t==='grad'||t==='shape'){commitSC();return}
  if(t==='selr'||t==='sele'){
   const[a,b,w,h]=rr(s.a,p);
@@ -784,14 +779,15 @@ $('#tol').oninput=e=>$('#tolo').textContent=e.target.value;
 on('#fs',()=>{const el=document.documentElement;if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen()});
 document.onfullscreenchange=()=>$('#fs').textContent=document.fullscreenElement?'Exit full screen':'Full screen';
 
-document.addEventListener('click',e=>{document.querySelectorAll('.dd[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('[data-t]'))d.open=false})});
-document.querySelectorAll('.dd').forEach(d=>d.addEventListener('toggle',()=>{if(d.open)document.querySelectorAll('.dd[open]').forEach(o=>{if(o!==d)o.open=false})}));
+document.addEventListener('pointerdown',e=>{const path=e.composedPath();document.querySelectorAll('.dd[open]').forEach(d=>{if(!path.includes(d))d.open=false})},true);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-t],[data-x]');if(b){const d=b.closest('.dd');if(d)d.open=false}});
+document.querySelectorAll('.dd').forEach(d=>d.addEventListener('toggle',()=>{if(!d.open)return;document.querySelectorAll('.dd[open]').forEach(o=>{if(o!==d)o.open=false});const m=d.querySelector('.menu');m.style.left='0px';const r=m.getBoundingClientRect(),dl0=d.getBoundingClientRect().left;if(r.right>innerWidth-8)m.style.left=Math.max(-dl0+8,innerWidth-8-r.right)+'px'}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.dd[open]').forEach(d=>d.open=false)});
 /* ---------- customization ---------- */
 let paperOn=true,SM=.5,PS=1,lastEnd=null,GS=50;
 const DKEYS={b:'brush',e:'erase',i:'pick',h:'hand',v:'move',m:'selr',r:'sele',l:'sell',w:'wand',g:'bucket',a:'grad',u:'shape',t:'text',s:'clone'};
 let KEYS={...DKEYS};
-const DST={theme:'dark',acc:'#6f7cff',side:'r',sw:300,cur:true,paper:'#fbfaf6',po:true,stage:'',keys:null};
+const DST={theme:'dark',acc:'#6f7cff',side:'r',sw:300,cur:true,wz:true,paper:'#fbfaf6',po:true,stage:'',keys:null};
 const ST={...DST};
 const THEMES={dark:['#1b1c1f','#25262a','#37383d','#e8e6e1','#9a9ba1','#2b2c30'],midnight:['#0b0f1a','#121a2b','#22304a','#dfe8ff','#8a9bbd','#0f1626'],light:['#f1f0ec','#ffffff','#d6d4cc','#1d1d1f','#6b6a66','#dcdad2'],contrast:['#000000','#111111','#ffffff','#ffffff','#dddddd','#1a1a1a']};
 const saveST=()=>{try{localStorage.setItem('sps',JSON.stringify(ST))}catch(e){}};
@@ -799,9 +795,8 @@ function applyST(){
  const T=THEMES[ST.theme]||THEMES.dark,r=document.documentElement.style;
  ['--bg','--pn','--ln','--tx','--dm','--stg'].forEach((k,i)=>r.setProperty(k,T[i]));
  if(ST.stage)r.setProperty('--stg',ST.stage);
- r.setProperty('--ac',ST.acc);r.setProperty('--sw',ST.sw+'px');
- $('.app').classList.toggle('l',ST.side==='l');
- paper=ST.paper;paperOn=ST.po;view.classList.toggle('tr',!ST.po);view.style.cursor=ST.cur?'none':'crosshair';
+ r.setProperty('--ac',ST.acc);
+ paper=ST.paper;paperOn=ST.po;view.classList.toggle('tr',!ST.po);view.style.cursor=ST.cur?'none':'crosshair';$('#wz').checked=ST.wz!==false;
  if(ST.keys)KEYS={...ST.keys};
  draw();
 }
@@ -814,10 +809,10 @@ function keysUI(){
   i.oninput=e=>{const v=e.target.value.toLowerCase();for(const x in KEYS)if(KEYS[x]===t)delete KEYS[x];if(v)KEYS[v]=t;ST.keys={...KEYS};saveST()};b.appendChild(w)});
 }
 const bindST=(id,key,get,after)=>{$(id).oninput=e=>{ST[key]=get(e.target);applyST();saveST();if(after)after()}};
-bindST('#sth','theme',e=>e.value);bindST('#sac','acc',e=>e.value);bindST('#ssd','side',e=>e.value);
-bindST('#ssw','sw',e=>+e.value,()=>$('#sswo').textContent=ST.sw);bindST('#scu','cur',e=>e.checked);
+bindST('#sth','theme',e=>e.value);bindST('#sac','acc',e=>e.value);
+bindST('#wz','wz',e=>e.checked);bindST('#scu','cur',e=>e.checked);
 bindST('#spc','paper',e=>e.value,pvDraw);bindST('#spo','po',e=>e.checked);bindST('#ssg','stage',e=>e.value);
-$('#set').onclick=()=>{$('#sth').value=ST.theme;$('#sac').value=ST.acc;$('#ssd').value=ST.side;$('#ssw').value=ST.sw;$('#sswo').textContent=ST.sw;$('#scu').checked=ST.cur;$('#spc').value=ST.paper;$('#spo').checked=ST.po;$('#ssg').value=ST.stage||THEMES[ST.theme][5];keysUI();$('#sdg').showModal()};
+$('#set').onclick=()=>{$('#sth').value=ST.theme;$('#sac').value=ST.acc;$('#scu').checked=ST.cur;$('#spc').value=ST.paper;$('#spo').checked=ST.po;$('#ssg').value=ST.stage||THEMES[ST.theme][5];keysUI();$('#sdg').showModal()};
 $('#sx').onclick=()=>$('#sdg').close();
 $('#srs').onclick=()=>{Object.assign(ST,DST);KEYS={...DKEYS};saveST();applyST();pvDraw();$('#sdg').close()};
 
@@ -914,7 +909,7 @@ function selMorph(mode){
 on('#sgr',()=>selMorph('gr'));on('#ssh',()=>selMorph('sh'));on('#ssm',()=>selMorph('sm'));
 
 /* view menu */
-on('#zi',()=>zoom(cl(Z*1.25,.05,8)));on('#zo',()=>zoom(cl(Z/1.25,.05,8)));on('#z1',()=>zoom(1));
+on('#zi',()=>zc(1.25));on('#zo',()=>zc(1/1.25));on('#z1',()=>{const r=stage.getBoundingClientRect();zoomAt(1,r.left+r.width/2,r.top+r.height/2)});
 on('#vg',()=>{grid=!grid;ovDraw()});
 $('#gs').addEventListener('input',e=>{GS=cl(+e.target.value||50,5,500);ovDraw()});
 
@@ -938,6 +933,204 @@ $('#pf').onchange=async e=>{
  }catch(err){alert('Could not open that project file.')}
 };
 
+/* ---------- zoom, pan, move everything ---------- */
+let spaceDown=false;
+function zoomAt(nz,cx,cy){
+ nz=cl(nz,.05,16);const r=view.getBoundingClientRect(),fx=(cx-r.left)/r.width,fy=(cy-r.top)/r.height;
+ zoom(nz);const q=view.getBoundingClientRect();
+ stage.scrollLeft+=q.left+fx*q.width-cx;stage.scrollTop+=q.top+fy*q.height-cy;
+}
+function zoomUI(){const v=Math.round(Z*100);$('#zp').textContent=v+'%';$('#zr').value=cl(v,5,800)}
+const zc=f=>{const r=stage.getBoundingClientRect();zoomAt(Z*f,r.left+r.width/2,r.top+r.height/2)};
+$('#zr').oninput=e=>{const r=stage.getBoundingClientRect();zoomAt(e.target.value/100,r.left+r.width/2,r.top+r.height/2)};
+function startPan(e){pid=e.pointerId;view.setPointerCapture(pid);sp={t:'hand',x:e.clientX,y:e.clientY,l:stage.scrollLeft,u:stage.scrollTop}}
+addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName)){e.preventDefault();if(!spaceDown){spaceDown=true;view.style.cursor='grab'}}});
+addEventListener('keyup',e=>{if(e.code==='Space'){spaceDown=false;view.style.cursor=ST.cur?'none':'crosshair'}});
+function abortStroke(){
+ if(stk){stk=false;SC.getContext('2d').clearRect(0,0,W,H);draw()}
+ if(sp&&sp.before)act.cv.getContext('2d').putImageData(sp.before,0,0);
+ if(sp&&sp.s)put(sp.s);
+ sp=null;draw();
+}
+const tps=new Map();let gs=null;
+stage.addEventListener('pointerdown',e=>{
+ if(e.pointerType!=='touch')return;tps.set(e.pointerId,[e.clientX,e.clientY]);
+ if(tps.size===2){abortStroke();const[a,b]=[...tps.values()];gs={d:Math.hypot(a[0]-b[0],a[1]-b[1])||1,z:Z,cx:(a[0]+b[0])/2,cy:(a[1]+b[1])/2};e.stopPropagation();e.preventDefault()}
+},true);
+stage.addEventListener('pointermove',e=>{
+ if(!tps.has(e.pointerId))return;tps.set(e.pointerId,[e.clientX,e.clientY]);
+ if(gs&&tps.size===2){e.stopPropagation();const[a,b]=[...tps.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]),cx=(a[0]+b[0])/2,cy=(a[1]+b[1])/2;zoomAt(gs.z*d/gs.d,cx,cy);stage.scrollLeft-=cx-gs.cx;stage.scrollTop-=cy-gs.cy;gs.cx=cx;gs.cy=cy}
+},true);
+const tend=e=>{tps.delete(e.pointerId);if(tps.size<2)gs=null};
+stage.addEventListener('pointerup',tend,true);stage.addEventListener('pointercancel',tend,true);
+function moveAllDraw(s,dx,dy){
+ for(const o of s.L){let x=o.l.cv.getContext('2d');x.clearRect(0,0,W,H);x.drawImage(o.cv,dx,dy);
+  if(o.m){x=o.l.mask.getContext('2d');x.globalCompositeOperation='source-over';x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(o.m,dx,dy)}}
+ draw();
+}
+function nudge(dx,dy){
+ const all=$('#mva').checked;
+ doOp(()=>{for(const l of(all?layers:[act])){const n=mk(W,H);n.getContext('2d').drawImage(l.cv,dx,dy);l.cv=n;
+  if(l.mask){const m=mk(W,H),x=m.getContext('2d');x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(l.mask,dx,dy);l.mask=m}}});
+}
+new MutationObserver(()=>{$('#rec').closest('.dd').querySelector('summary').classList.toggle('live',$('#rec').classList.contains('live'))}).observe($('#rec'),{attributes:true,attributeFilter:['class']});
+
+/* ---------- multi-page PDF ---------- */
+function pdfBlob(cvs){
+ const en=new TextEncoder(),P=[],o=[];let n=0;
+ const w=s=>{const b=typeof s==='string'?en.encode(s):s;P.push(b);n+=b.length},ob=(i,s)=>{o[i]=n;w(i+' 0 obj\n'+s+'\nendobj\n')};
+ w('%PDF-1.4\n');
+ const N=cvs.length;
+ ob(1,'<</Type/Catalog/Pages 2 0 R>>');
+ ob(2,`<</Type/Pages/Kids[${cvs.map((_,i)=>(3+i*3)+' 0 R').join(' ')}]/Count ${N}>>`);
+ cvs.forEach((c,i)=>{
+  const pg=3+i*3,im=pg+1,ct=pg+2,wd=c.width,ht=c.height;
+  const bin=atob(c.toDataURL('image/jpeg',.93).split(',')[1]),j=Uint8Array.from(bin,ch=>ch.charCodeAt(0));
+  ob(pg,`<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${wd} ${ht}]/Resources<</XObject<</I ${im} 0 R>>>>/Contents ${ct} 0 R>>`);
+  o[im]=n;w(`${im} 0 obj\n<</Type/XObject/Subtype/Image/Width ${wd}/Height ${ht}/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length ${j.length}>>\nstream\n`);w(j);w('\nendstream\nendobj\n');
+  const cs=`q ${wd} 0 0 ${ht} 0 0 cm /I Do Q`;ob(ct,`<</Length ${cs.length}>>\nstream\n${cs}\nendstream`);
+ });
+ const tot=3*N+3,xr=n;w(`xref\n0 ${tot}\n0000000000 65535 f \n`);
+ for(let i=1;i<tot;i++)w(String(o[i]).padStart(10,'0')+' 00000 n \n');
+ w(`trailer\n<</Size ${tot}/Root 1 0 R>>\nstartxref\n${xr}\n%%EOF`);
+ return new Blob(P,{type:'application/pdf'});
+}
+$('#pdf').onclick=()=>{compose();dl(pdfBlob([flat()]),'sketch.pdf')};
+
+/* ---------- storyboard and animation ---------- */
+const FR=[];let fsel=-1,onion=null,plTok=0;
+const nth=c=>{const k=96/Math.max(c.width,c.height),t=mk(Math.max(1,Math.round(c.width*k)),Math.max(1,Math.round(c.height*k)));t.getContext('2d').drawImage(c,0,0,t.width,t.height);return t};
+const toPng=c=>new Promise(r=>c.toBlob(r,'image/png'));
+const getBmp=async i=>{const f=FR[i];if(!f.bm)f.bm=await createImageBitmap(f.blob);return f.bm};
+const freeBmp=i=>{const f=FR[i];if(f&&f.bm){f.bm.close();f.bm=null}};
+const total=()=>FR.reduce((a,f)=>a+f.dur,0);
+function frIn(){if(fsel>=0){$('#fdur').value=FR[fsel].dur;$('#fcap').value=FR[fsel].cap}}
+function frUI(){
+ const b=$('#fr');b.innerHTML='';
+ FR.forEach((f,i)=>{const e=document.createElement('button');e.className='fth'+(i===fsel?' on':'');e.title='Frame '+(i+1);e.appendChild(cp(f.th));
+  const sp2=document.createElement('span');sp2.textContent=(i+1)+': '+f.dur+'s';e.appendChild(sp2);
+  e.onclick=()=>{fsel=i;frUI();frIn();setOnion()};b.appendChild(e)});
+ $('#ast').textContent=FR.length?FR.length+' frame'+(FR.length>1?'s':'')+', '+total().toFixed(1)+' s total':'No frames yet.';
+}
+function setOnion(){
+ if(onion){try{onion.close()}catch(e){}onion=null}ovDraw();
+ const i=fsel;if(i<0)return;
+ createImageBitmap(FR[i].blob).then(b=>{if(fsel===i){onion=b;ovDraw()}else b.close()});
+}
+async function capture(){compose();const c=flat();return{blob:await toPng(c),th:nth(c),w:c.width,h:c.height,bm:null}}
+async function addFrame(){
+ if(FR.length>=200){alert('The frame limit is 200.');return false}
+ const c=await capture();FR.splice(fsel+1,0,{...c,dur:+$('#fdd').value||1,cap:''});fsel++;frUI();frIn();setOnion();return true;
+}
+$('#af').onclick=addFrame;
+$('#ac').onclick=async()=>{if(await addFrame())direct(x=>x.clearRect(0,0,W,H))};
+$('#ar').onclick=async()=>{if(fsel<0)return alert('Select a frame to replace first.');freeBmp(fsel);Object.assign(FR[fsel],await capture());frUI();setOnion()};
+$('#ad').onclick=()=>{if(fsel<0)return;const f=FR[fsel];FR.splice(fsel+1,0,{...f,th:cp(f.th),bm:null});fsel++;frUI();frIn();setOnion()};
+$('#ax').onclick=()=>{if(fsel<0)return;freeBmp(fsel);FR.splice(fsel,1);fsel=Math.min(fsel,FR.length-1);frUI();frIn();setOnion()};
+$('#al').onclick=()=>{if(fsel>0){[FR[fsel-1],FR[fsel]]=[FR[fsel],FR[fsel-1]];fsel--;frUI()}};
+$('#arr').onclick=()=>{if(fsel>=0&&fsel<FR.length-1){[FR[fsel+1],FR[fsel]]=[FR[fsel],FR[fsel+1]];fsel++;frUI()}};
+$('#alo').onclick=()=>{if(fsel>=0)createImageBitmap(FR[fsel].blob).then(b=>place(b))};
+$('#acl').onclick=()=>{if(FR.length&&confirm('Remove all frames?')){FR.forEach((f,i)=>freeBmp(i));FR.length=0;fsel=-1;frUI();setOnion()}};
+$('#fdur').oninput=e=>{if(fsel>=0){FR[fsel].dur=Math.max(.05,+e.target.value||1);frUI()}};
+$('#fcap').oninput=e=>{if(fsel>=0)FR[fsel].cap=e.target.value};
+$('#afd').onclick=()=>{const d=Math.max(.05,+$('#fdd').value||1);FR.forEach(f=>f.dur=d);frUI();frIn()};
+$('#aon').addEventListener('input',()=>ovDraw());$('#aoo').addEventListener('input',()=>ovDraw());
+
+const tdOf=i=>Math.max(0,Math.min(+$('#atd').value||0,FR[i].dur*.9,i<FR.length-1?FR[i+1].dur*.9:0));
+function stateAt(t){
+ let s0=0;
+ for(let i=0;i<FR.length;i++){const d=FR[i].dur;
+  if(t<s0+d||i===FR.length-1){const rem=d-Math.min(t-s0,d),td=tdOf(i);if(i<FR.length-1&&td>0&&rem<td)return{i,b:i+1,p:1-rem/td};return{i,b:-1,p:0}}
+  s0+=d}
+ return{i:0,b:-1,p:0};
+}
+function outSize(){const v=$('#aw').value;let w,h;if(v==='c'){w=W;h=H}else[w,h]=v.split('x').map(Number);return[Math.max(2,w&~1),Math.max(2,h&~1)]}
+function drawFrame(x,w,h,A,B,p,kind,cap){
+ x.globalAlpha=1;x.fillStyle='#000';x.fillRect(0,0,w,h);
+ const dr=(bm,ox,oy,sc,al)=>{const k=Math.min(w/bm.width,h/bm.height)*sc,dw=bm.width*k,dh=bm.height*k;x.globalAlpha=al;x.drawImage(bm,(w-dw)/2+ox,(h-dh)/2+oy,dw,dh);x.globalAlpha=1};
+ if(!B||p<=0||kind==='none')dr(A,0,0,1,1);
+ else if(kind==='fade'){dr(A,0,0,1,1);dr(B,0,0,1,p)}
+ else if(kind==='slide'){dr(A,-p*w,0,1,1);dr(B,(1-p)*w,0,1,1)}
+ else if(kind==='up'){dr(A,0,-p*h,1,1);dr(B,0,(1-p)*h,1,1)}
+ else{dr(A,0,0,1+p*.15,1);dr(B,0,0,1,p)}
+ if(cap&&$('#acap').checked){
+  const fs=Math.max(10,Math.round(h*.05));x.font=`600 ${fs}px sans-serif`;x.textAlign='center';x.textBaseline='bottom';
+  const tw=Math.min(w*.92,x.measureText(cap).width+fs);x.fillStyle='rgba(0,0,0,.65)';x.fillRect((w-tw)/2,h-fs*1.9,tw,fs*1.5);
+  x.fillStyle='#fff';x.fillText(cap,w/2,h-fs*.5,w*.9);x.textAlign='left';
+ }
+}
+async function renderAt(x,w,h,t){
+ const s=stateAt(t),A=await getBmp(s.i),B=s.b>=0?await getBmp(s.b):null;
+ drawFrame(x,w,h,A,B,s.p,$('#atr').value,FR[s.i].cap);
+ for(let j=0;j<s.i-1;j++)freeBmp(j);
+}
+$('#apl').onclick=async()=>{
+ if(plTok){plTok=0;return}
+ if(!FR.length)return alert('Add a frame first.');
+ const[w,h]=outSize(),pv=$('#apv');pv.width=320;pv.height=Math.max(2,Math.round(320*h/w));
+ const x=pv.getContext('2d'),T=total()*1000,tok=plTok=Date.now(),t0=performance.now(),b=$('#apl');b.textContent='Stop preview';
+ while(plTok===tok){const t=performance.now()-t0;if(t>=T)break;await renderAt(x,pv.width,pv.height,t/1000);await new Promise(r=>requestAnimationFrame(r))}
+ if(plTok===tok)plTok=0;b.textContent='Play preview';FR.forEach((f,i)=>freeBmp(i));
+};
+$('#aex').onclick=async()=>{
+ if(!FR.length)return alert('Add at least one frame first.');
+ if(!window.MediaRecorder)return alert('Video export needs a browser with MediaRecorder support, such as Chrome, Edge or Firefox.');
+ const mt=['video/webm;codecs=vp9','video/webm','video/mp4'].find(t=>MediaRecorder.isTypeSupported(t));
+ if(!mt)return alert('This browser cannot encode video.');
+ const[w,h]=outSize(),c=mk(w,h),x=c.getContext('2d'),fps=+$('#afps').value||30,T=total()*1000,ch=[],b=$('#aex');
+ b.disabled=true;await renderAt(x,w,h,0);
+ const rec=new MediaRecorder(c.captureStream(fps),{mimeType:mt,videoBitsPerSecond:8e6});
+ rec.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
+ const stopped=new Promise(r=>rec.onstop=r);rec.start();const t0=performance.now();
+ for(;;){const t=performance.now()-t0;if(t>=T)break;await renderAt(x,w,h,t/1000);b.textContent='Exporting '+Math.round(t/T*100)+'%';await wait(1000/fps)}
+ await renderAt(x,w,h,Math.max(0,T/1000-.001));await wait(300);rec.stop();await stopped;
+ dl(new Blob(ch,{type:mt}),'animation.'+(mt.includes('mp4')?'mp4':'webm'));
+ FR.forEach((f,i)=>freeBmp(i));b.disabled=false;b.textContent='Export video';
+};
+function wrapText(x,t,px,py,mw,lh,max){const ws=(t||'').split(/\s+/);let line='',n=0;for(const w of ws){const test=line?line+' '+w:w;if(x.measureText(test).width>mw&&line){x.fillText(line,px,py+n*lh);n++;line=w;if(n>=max)return}else line=test}if(line&&n<max)x.fillText(line,px,py+n*lh)}
+async function sheet(){
+ const N=FR.length,cols=Math.min(3,N),cw=480,ih=Math.round(cw*FR[0].h/FR[0].w),pad=24,capH=70,rows=Math.ceil(N/cols),top=70,w=cols*(cw+pad)+pad,h=top+rows*(ih+capH+pad)+pad,c=mk(w,h),x=c.getContext('2d');
+ x.fillStyle='#fff';x.fillRect(0,0,w,h);x.fillStyle='#111';x.font='700 28px sans-serif';x.fillText('Storyboard',pad,46);
+ for(let i=0;i<N;i++){
+  const cx=pad+(i%cols)*(cw+pad),cy=top+(i/cols|0)*(ih+capH+pad),bm=await getBmp(i);
+  x.fillStyle='#f2f2f2';x.fillRect(cx,cy,cw,ih);const k=Math.min(cw/bm.width,ih/bm.height);x.drawImage(bm,cx+(cw-bm.width*k)/2,cy+(ih-bm.height*k)/2,bm.width*k,bm.height*k);
+  x.strokeStyle='#999';x.lineWidth=2;x.strokeRect(cx,cy,cw,ih);
+  x.fillStyle='#111';x.font='600 18px sans-serif';x.fillText('Frame '+(i+1)+'   '+FR[i].dur+' s',cx,cy+ih+24);
+  x.font='16px sans-serif';x.fillStyle='#333';wrapText(x,FR[i].cap,cx,cy+ih+46,cw,20,2);freeBmp(i);
+ }
+ return c;
+}
+async function frameCanvas(i){const bm=await getBmp(i),c=mk(bm.width,bm.height),x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(bm,0,0);freeBmp(i);return c}
+$('#asb').onclick=async()=>{if(!FR.length)return alert('Add a frame first.');(await sheet()).toBlob(b=>dl(b,'storyboard.png'))};
+$('#asp').onclick=async()=>{if(!FR.length)return alert('Add a frame first.');dl(pdfBlob([await sheet()]),'storyboard.pdf')};
+$('#afp').onclick=async()=>{if(!FR.length)return alert('Add a frame first.');const pg=[];for(let i=0;i<FR.length;i++)pg.push(await frameCanvas(i));dl(pdfBlob(pg),'frames.pdf')};
+
+/* ---------- send to the NightLights video editor ---------- */
+const NLU='https://nightlightsinc.github.io/video-editor/';
+try{$('#nlu').value=localStorage.getItem('spnl')||NLU}catch(e){$('#nlu').value=NLU}
+$('#nls').onclick=async()=>{
+ const url=$('#nlu').value.trim()||NLU,say=t=>$('#nlt').textContent=t;let origin;
+ try{origin=new URL(url).origin}catch(e){say('Enter the full video editor address, starting with https://');return}
+ try{localStorage.setItem('spnl',url)}catch(e){}
+ const w=window.open(url,'_blank'),name='nightlights-artwork.pdf';let ready=false,sent=false,payload=null;
+ const trySend=()=>{if(ready&&payload&&!sent){sent=true;w.postMessage(payload,origin);say('Sent. Look in the video editor for '+name+'.')}};
+ const onMsg=e=>{if(e.origin!==origin||(w&&e.source!==w))return;const d=e.data||{};
+  if(d.type==='nightlights:editor-ready'){ready=true;trySend()}
+  else if(d.type==='nightlights:import-received'){say('The video editor received your artwork.');removeEventListener('message',onMsg)}};
+ addEventListener('message',onMsg);say('Building the PDF…');
+ try{
+  compose();const pages=[flat()],withFrames=$('#nlf').checked;
+  if(withFrames)for(let i=0;i<FR.length;i++)pages.push(await frameCanvas(i));
+  const blob=pdfBlob(pages),buf=await blob.arrayBuffer();
+  let images=null;if($('#nlp').checked)images=await Promise.all(pages.map(async c=>(await toPng(c)).arrayBuffer()));
+  if($('#nld').checked)dl(blob,name);
+  payload={type:'nightlights:import-pdf',source:'nightlights-art-pad',name,mime:'application/pdf',buffer:buf,images,width:W,height:H,pages:pages.length,durations:withFrames?FR.map(f=>f.dur):[]};
+  if(!w){say('Your browser blocked the new tab. The PDF was downloaded; open the video editor and import it.');if(!$('#nld').checked)dl(blob,name);removeEventListener('message',onMsg);return}
+  say('Waiting for the video editor to open…');trySend();
+  setTimeout(()=>{if(!sent){removeEventListener('message',onMsg);say('The video editor did not answer, so I downloaded the PDF instead. Drag it into the editor.');if(!$('#nld').checked)dl(blob,name)}},20000);
+ }catch(err){say('Something went wrong while building the PDF.');console.error(err)}
+};
+
 /* ---------- keyboard ---------- */
 document.addEventListener('keydown',e=>{
  if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)&&e.target.type!=='range')return;
@@ -949,6 +1142,7 @@ document.addEventListener('keydown',e=>{
  if(m&&k==='j'){e.preventDefault();viaCopy(e.shiftKey);return}
  if(m&&k==='i'&&e.shiftKey){e.preventDefault();selInv();return}
  if(m)return;
+ if(k.startsWith('arrow')&&tool==='move'){e.preventDefault();const st=e.shiftKey?10:1;nudge(k==='arrowleft'?-st:k==='arrowright'?st:0,k==='arrowup'?-st:k==='arrowdown'?st:0);return}
  const KM=KEYS;
  if(KM[k])setTool(KM[k]);
  if(k==='delete'||k==='backspace'){e.preventDefault();e.altKey?fillSel():clearSel()}
