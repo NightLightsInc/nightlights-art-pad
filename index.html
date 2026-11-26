@@ -25,7 +25,7 @@ button,input,select{font:inherit;color:inherit}
 .menu{position:absolute;top:calc(100% + 4px);left:0;z-index:40;background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px;min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
 .menu .b{text-align:left;white-space:nowrap}
 .menu .b.on{background:var(--ac);border-color:var(--ac);color:#fff}
-#stage{grid-area:st;display:flex;overflow:auto;background:var(--stg,#2b2c30);touch-action:none;padding:40px}
+#stage{grid-area:st;display:flex;overflow:auto;background:var(--stg,#2b2c30);touch-action:none;padding:40px 80px 40px 40px}
 #board{margin:auto;position:relative;box-shadow:0 4px 24px rgba(0,0,0,.5);line-height:0}
 #ov{position:absolute;left:0;top:0;pointer-events:none}
 #view{cursor:none;touch-action:none}
@@ -69,17 +69,32 @@ dialog h2{font-size:16px;margin:0 0 10px}
 .fth{position:relative;border:2px solid var(--ln);border-radius:6px;cursor:pointer;padding:0;background:#000;line-height:0}
 .fth.on{border-color:var(--ac)}
 .fth span{position:absolute;left:2px;bottom:2px;background:rgba(0,0,0,.7);color:#fff;font-size:10px;line-height:1.2;padding:1px 4px;border-radius:4px}
+.app.sl #stage{padding:40px 40px 40px 80px}
+.rot{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;width:50px;background:var(--pn);border:1px solid var(--ln);border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+.app.sl .rot{right:auto;left:14px}
+.rot span{font-size:11px;color:var(--dm);font-variant-numeric:tabular-nums;cursor:default}
+.rotsl{position:relative;width:28px;height:min(240px,calc(100vh - 340px))}
+.rotsl input{position:absolute;left:50%;top:50%;margin:0;width:min(240px,calc(100vh - 340px));transform:translate(-50%,-50%) rotate(-90deg)}
+.rot .b{padding:3px 6px;font-size:11px}
+.fsb{position:fixed;z-index:20;padding:5px 10px;font-size:12px;background:var(--pn)}
+.fsb[data-p=bl]{bottom:14px;left:14px}
+.fsb[data-p=br]{bottom:14px;right:22px}
+.fsb[data-p=tr]{top:var(--bt,70px);right:22px}
+.fsb[data-p=x]{display:none}
+.app.sl~.fsb[data-p=bl]{left:80px}
 </style>
 </head>
 <body>
 <div class="app">
- <header class="bar"><details class="dd"><summary class="b">File ▾</summary><div class="menu panel"><div class="row"><button class="b" id="cvs" data-x>Canvas size</button><button class="b" id="png" data-x>Save PNG</button><button class="b pri" id="pdf" data-x>Save PDF</button></div><div class="row"><button class="b" id="rec">● Record timelapse</button><button class="b" id="set" data-x>Settings</button><button class="b" id="fs" data-x>Full screen</button></div>
+ <header class="bar"><details class="dd"><summary class="b">File ▾</summary><div class="menu panel"><div class="row"><button class="b" id="cvs" data-x>Canvas size</button><button class="b" id="png" data-x>Save PNG</button><button class="b pri" id="pdf" data-x>Save PDF</button></div><div class="row"><button class="b" id="rec">● Record timelapse</button><button class="b" id="set" data-x>Settings</button><button class="b" id="fs2" data-x>Full screen</button></div>
    <div class="f">Format</div><select id="ef"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option></select>
    <label class="f" for="eq">Quality <span id="eqo">92</span></label><input type="range" id="eq" min="1" max="100" value="92">
    <label class="f" for="es">Scale <span id="eso">100</span>%</label><input type="range" id="es" min="10" max="400" value="100">
    <div class="row"><button class="b pri" id="exp">Export image</button><button class="b" id="eal">Every layer as PNG</button></div>
    <div class="row"><button class="b" id="psv">Save project</button><button class="b" id="pop">Open project</button></div>
-  </div></details><details class="dd"><summary class="b">Edit ▾</summary><div class="menu panel"><div class="row"><button class="b" id="undo">Undo</button><button class="b" id="redo">Redo</button><button class="b" id="clr">Clear layer</button></div><div class="f">Ctrl+Z undoes, Ctrl+Shift+Z redoes.</div></div></details><details class="dd"><summary class="b">View ▾</summary><div class="menu panel"><div class="row"><button class="b" id="zo">−</button><span id="zp" style="min-width:52px;text-align:center">100%</span><button class="b" id="zi">+</button><button class="b" id="z1">100%</button><button class="b" id="fit">Fit</button></div><input type="range" id="zr" min="5" max="800" value="100" aria-label="Zoom"><div class="row"><button class="b" id="vg">Toggle grid</button><label class="c">Grid size <input type="number" id="gs" value="50" min="5" max="500" style="width:70px"></label></div><label class="c"><input type="checkbox" id="wz" checked>Mouse wheel zooms (otherwise Ctrl+wheel)</label><div class="f">Pan: hold Space and drag, drag with the middle mouse button, use two fingers on touch, or pick the Hand tool. Arrow keys nudge the Move tool.</div></div></details><details class="dd"><summary class="b on">Paint ▾</summary><div class="menu"><button class="b" data-t="brush" title="Brush (B)">Brush</button><button class="b" data-t="erase" title="Eraser (E)">Erase</button><button class="b" data-t="pick" title="Color picker (I, or Alt+click)">Pick</button><button class="b" data-t="bucket" title="Paint bucket (G)">Bucket</button><button class="b" data-t="grad" title="Gradient (A)">Gradient</button><button class="b" data-t="shape" title="Line, rectangle, ellipse (U)">Shape</button><button class="b" data-t="text" title="Text (T)">Text</button></div></details><details class="dd"><summary class="b">Select and move ▾</summary><div class="menu"><button class="b" data-t="selr" title="Rectangle select (M). Shift adds, Alt subtracts">Rect</button><button class="b" data-t="sele" title="Ellipse select (R)">Ellipse</button><button class="b" data-t="sell" title="Lasso select (L)">Lasso</button><button class="b" data-t="wand" title="Magic wand (W)">Wand</button><button class="b" data-t="move" title="Move layer or selection (V)">Move</button><button class="b" data-t="hand" title="Hand: drag to pan (H)">Hand</button></div></details><details class="dd"><summary class="b">Retouch ▾</summary><div class="menu"><button class="b" data-t="clone" title="Clone stamp (S). Alt+click sets the source">Clone</button><button class="b" data-t="smudge" title="Smudge">Smudge</button><button class="b" data-t="blurT" title="Blur brush">Blur</button><button class="b" data-t="sharpT" title="Sharpen brush">Sharpen</button><button class="b" data-t="dodge" title="Dodge: lighten">Dodge</button><button class="b" data-t="burn" title="Burn: darken">Burn</button></div></details><details class="dd"><summary class="b">Brushes ▾</summary><div class="menu panel">
+  </div></details><details class="dd"><summary class="b">Edit ▾</summary><div class="menu panel"><div class="row"><button class="b" id="undo">Undo</button><button class="b" id="redo">Redo</button><button class="b" id="clr">Clear layer</button></div><div class="f">Ctrl+Z undoes, Ctrl+Shift+Z redoes.</div></div></details><details class="dd"><summary class="b">View ▾</summary><div class="menu panel"><div class="row"><button class="b" id="zo">−</button><span id="zp" style="min-width:52px;text-align:center">100%</span><button class="b" id="zi">+</button><button class="b" id="z1">100%</button><button class="b" id="fit">Fit</button></div><input type="range" id="zr" min="5" max="800" value="100" aria-label="Zoom"><div class="row"><button class="b" id="rotb">Apply rotation to artwork</button></div>
+ <div class="row"><button class="b" id="vg">Toggle grid</button><label class="c">Grid size <input type="number" id="gs" value="50" min="5" max="500" style="width:70px"></label></div><label class="c"><input type="checkbox" id="wz" checked>Mouse wheel zooms (otherwise Ctrl+wheel)</label><div class="f">The slider on the side turns your view of the canvas in any direction; two fingers twist it on touch screens. Your artwork is not changed unless you press Apply rotation to artwork.</div>
+ <div class="f">Pan: hold Space and drag, drag with the middle mouse button, use two fingers on touch, or pick the Hand tool. Arrow keys nudge the Move tool.</div></div></details><details class="dd"><summary class="b on">Paint ▾</summary><div class="menu"><button class="b" data-t="brush" title="Brush (B)">Brush</button><button class="b" data-t="erase" title="Eraser (E)">Erase</button><button class="b" data-t="pick" title="Color picker (I, or Alt+click)">Pick</button><button class="b" data-t="bucket" title="Paint bucket (G)">Bucket</button><button class="b" data-t="grad" title="Gradient (A)">Gradient</button><button class="b" data-t="shape" title="Line, rectangle, ellipse (U)">Shape</button><button class="b" data-t="text" title="Text (T)">Text</button></div></details><details class="dd"><summary class="b">Select and move ▾</summary><div class="menu"><button class="b" data-t="selr" title="Rectangle select (M). Shift adds, Alt subtracts">Rect</button><button class="b" data-t="sele" title="Ellipse select (R)">Ellipse</button><button class="b" data-t="sell" title="Lasso select (L)">Lasso</button><button class="b" data-t="wand" title="Magic wand (W)">Wand</button><button class="b" data-t="move" title="Move layer or selection (V)">Move</button><button class="b" data-t="hand" title="Hand: drag to pan (H)">Hand</button></div></details><details class="dd"><summary class="b">Retouch ▾</summary><div class="menu"><button class="b" data-t="clone" title="Clone stamp (S). Alt+click sets the source">Clone</button><button class="b" data-t="smudge" title="Smudge">Smudge</button><button class="b" data-t="blurT" title="Blur brush">Blur</button><button class="b" data-t="sharpT" title="Sharpen brush">Sharpen</button><button class="b" data-t="dodge" title="Dodge: lighten">Dodge</button><button class="b" data-t="burn" title="Burn: darken">Burn</button></div></details><details class="dd"><summary class="b">Brushes ▾</summary><div class="menu panel">
    <label class="f" for="sz">Size <span id="szo">10</span></label><input type="range" id="sz" min="1" max="300" value="10">
    <label class="f" for="opa">Opacity <span id="opo">100%</span></label><input type="range" id="opa" min="1" max="100" value="100">
    <canvas id="pv" width="260" height="54" style="width:100%;border-radius:6px;margin-top:8px"></canvas>
@@ -156,8 +171,12 @@ dialog h2{font-size:16px;margin:0 0 10px}
    <label class="f" for="lsa">Angle</label><input type="range" id="lsa" min="0" max="360" value="45">
    <div class="f">Alpha mask: paint reveals, eraser hides</div>
    <div class="row"><button class="b" id="m1">Add mask</button><button class="b" id="m2">Edit mask</button><button class="b" id="m3">Apply</button><button class="b" id="m4">Delete</button></div>
-  </div></details><details class="dd"><summary class="b">Animate ▾</summary><div class="menu panel"><div class="f" style="margin-top:0">Build a storyboard or a frame-by-frame animation, then export it as a video.</div><div class="row"><button class="b pri" id="af">Add frame</button><button class="b" id="ac">Add frame and clear layer</button><button class="b" id="ar">Replace frame</button></div><div id="fr" class="frames"></div><div class="row"><button class="b" id="al">◀</button><button class="b" id="arr">▶</button><button class="b" id="ad">Duplicate</button><button class="b" id="ax">Delete</button><button class="b" id="alo">Use as layer</button><button class="b" id="acl">Clear all</button></div><div class="row"><label class="c">Seconds <input type="number" id="fdur" value="1" min="0.05" max="60" step="0.05" style="width:70px"></label><input type="text" id="fcap" placeholder="Caption (optional)" aria-label="Caption" style="flex:1"></div><div class="row"><label class="c">New frames last <input type="number" id="fdd" value="1" min="0.05" max="60" step="0.05" style="width:64px"> s</label><button class="b" id="afd">Apply to all</button></div><div class="f">Transition</div><div class="row"><select id="atr" style="width:auto"><option value="none">Cut</option><option value="fade">Crossfade</option><option value="slide">Slide left</option><option value="up">Slide up</option><option value="zoom">Zoom and fade</option></select><label class="c">Length <input type="number" id="atd" value="0.4" min="0" max="3" step="0.1" style="width:60px"> s</label></div><div class="f">Video</div><div class="row"><select id="aw" style="width:auto"><option value="c">Same size as canvas</option><option value="1920x1080">1920 × 1080</option><option value="1280x720">1280 × 720</option><option value="1080x1080">1080 × 1080</option><option value="1080x1920">1080 × 1920</option></select><select id="afps" style="width:auto"><option value="30">30 fps</option><option value="24">24 fps</option><option value="15">15 fps</option></select></div><div class="row"><label class="c"><input type="checkbox" id="acap">Show captions</label><label class="c"><input type="checkbox" id="aon">Onion skin</label><input type="range" id="aoo" min="5" max="80" value="30" style="width:80px" aria-label="Onion skin strength"></div><canvas id="apv" width="320" height="180" style="width:100%;border-radius:6px;background:#000"></canvas><div class="row"><button class="b" id="apl">Play preview</button><button class="b pri" id="aex">Export video</button></div><div class="row"><button class="b" id="asb">Storyboard sheet (PNG)</button><button class="b" id="asp">Storyboard sheet (PDF)</button><button class="b" id="afp">Frames as PDF</button></div><div class="f" id="ast">No frames yet.</div></div></details><details class="dd"><summary class="b">Night Lights ▾</summary><div class="menu panel"><div class="f" style="margin-top:0">Sends your whole canvas, as a PDF, into the NightLights video editor.</div><div class="f">Video editor address</div><input type="text" id="nlu" aria-label="Video editor address"><div class="row"><label class="c"><input type="checkbox" id="nlf">Add storyboard frames as extra pages</label></div><div class="row"><label class="c"><input type="checkbox" id="nlp">Also send each page as a PNG image</label></div><div class="row"><label class="c"><input type="checkbox" id="nld" checked>Also download a copy of the PDF</label></div><div class="row"><button class="b pri" id="nls">Send to video editor</button></div><div class="f" id="nlt"></div></div></details></header>
+  </div></details><details class="dd"><summary class="b">Animate ▾</summary><div class="menu panel"><div class="f" style="margin-top:0">Build a storyboard or a frame-by-frame animation, then export it as a video.</div><div class="row"><button class="b pri" id="af">Add frame</button><button class="b" id="ac">Add frame and clear layer</button><button class="b" id="ar">Replace frame</button></div><div id="fr" class="frames"></div><div class="row"><button class="b" id="al">◀</button><button class="b" id="arr">▶</button><button class="b" id="ad">Duplicate</button><button class="b" id="ax">Delete</button><button class="b" id="alo">Use as layer</button><button class="b" id="acl">Clear all</button></div><div class="row"><label class="c">Seconds <input type="number" id="fdur" value="1" min="0.05" max="60" step="0.05" style="width:70px"></label><input type="text" id="fcap" placeholder="Caption (optional)" aria-label="Caption" style="flex:1"></div><div class="row"><label class="c">New frames last <input type="number" id="fdd" value="1" min="0.05" max="60" step="0.05" style="width:64px"> s</label><button class="b" id="afd">Apply to all</button></div><div class="f">Transition</div><div class="row"><select id="atr" style="width:auto"><option value="none">Cut</option><option value="fade">Crossfade</option><option value="slide">Slide left</option><option value="up">Slide up</option><option value="zoom">Zoom and fade</option></select><label class="c">Length <input type="number" id="atd" value="0.4" min="0" max="3" step="0.1" style="width:60px"> s</label></div><div class="f">Video</div><div class="row"><select id="aw" style="width:auto"><option value="c">Same size as canvas</option><option value="1920x1080">1920 × 1080</option><option value="1280x720">1280 × 720</option><option value="1080x1080">1080 × 1080</option><option value="1080x1920">1080 × 1920</option></select><select id="afps" style="width:auto"><option value="30">30 fps</option><option value="24">24 fps</option><option value="15">15 fps</option></select></div><div class="row"><label class="c"><input type="checkbox" id="acap">Show captions</label><label class="c"><input type="checkbox" id="aon">Onion skin</label><input type="range" id="aoo" min="5" max="80" value="30" style="width:80px" aria-label="Onion skin strength"></div><canvas id="apv" width="320" height="180" style="width:100%;border-radius:6px;background:#000"></canvas><div class="row"><button class="b" id="apl">Play preview</button><button class="b pri" id="aex">Export video</button></div><div class="row"><button class="b" id="asb">Storyboard sheet (PNG)</button><button class="b" id="asp">Storyboard sheet (PDF)</button><button class="b" id="afp">Frames as PDF</button></div><div class="f" id="ast">No frames yet.</div></div></details><details class="dd"><summary class="b">Night Lights ▾</summary><div class="menu panel"><div class="f" style="margin-top:0">Sends your whole canvas, as a PDF, into the NightLights video editor.</div><div class="f">Video editor address</div><input type="text" id="nlu" aria-label="Video editor address"><div class="row"><label class="c"><input type="checkbox" id="nlf">Add storyboard frames as extra pages</label></div><div class="row"><label class="c"><input type="checkbox" id="nlp">Also send each page as a PNG image</label></div><div class="row"><label class="c"><input type="checkbox" id="nld" checked>Also download a copy of the PDF</label></div><div class="row"><button class="b pri" id="nls">Send to video editor</button></div>
+<div class="f">One-time setup for your editor page: copy this small receiver script and paste it in.</div>
+<div class="row"><button class="b" id="rcc">Copy receiver code</button><button class="b" id="rcd">Download receiver file</button></div><div class="f" id="nlt"></div></div></details></header>
  <main id="stage"><div id="board"><canvas id="view"></canvas><canvas id="ov"></canvas></div></main>
+ <div class="rot" id="rotw"><span id="rotv" title="Double-click to reset">0°</span><div class="rotsl"><input type="range" id="rot" min="-180" max="180" step="1" value="0" aria-label="Rotate canvas"></div><button class="b" id="rot0" title="Reset rotation">Reset</button></div>
+ <button class="b fsb" id="fs" data-p="bl" title="Full screen">Full screen</button>
  <input type="file" id="fi" accept="image/*" hidden>
  
 </div>
@@ -187,11 +206,39 @@ dialog h2{font-size:16px;margin:0 0 10px}
 <dialog id="sdg"><h2>Settings</h2>
  <div class="row"><label class="c" style="flex:1">Theme <select id="sth"><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="light">Light</option><option value="contrast">High contrast</option></select></label><label class="c">Accent <input type="color" id="sac" style="width:36px;height:26px;padding:0"></label></div>
  <div class="row"><label class="c">Paper <input type="color" id="spc" style="width:36px;height:26px;padding:0"></label><label class="c"><input type="checkbox" id="spo">Opaque paper</label><label class="c">Workspace <input type="color" id="ssg" style="width:36px;height:26px;padding:0"></label></div>
+ <div class="row"><label class="c" style="flex:1">Rotation slider <select id="sro"><option value="r">Right side</option><option value="l">Left side</option></select></label></div>
+ <div class="row"><label class="c" style="flex:1">Full screen button <select id="sfp"><option value="bl">Bottom left</option><option value="br">Bottom right</option><option value="tr">Top right, under the folders</option><option value="x">Hidden (use the File folder)</option></select></label></div>
  <label class="c"><input type="checkbox" id="scu">Show brush ring cursor</label>
  <div class="f" style="margin-top:12px">Keyboard shortcuts: one key per tool, blank for none</div>
  <div id="skeys" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin:8px 0"></div>
  <div class="row" style="justify-content:space-between"><button class="b" id="srs" type="button">Reset settings</button><button class="b pri" id="sx" type="button">Done</button></div>
 </dialog>
+<script type="text/plain" id="rcv">
+/*
+  NightLights video editor receiver (from the NightLights Art Pad).
+  Paste this into the video editor page, inside a script element placed before the editor's own scripts.
+  Then define window.onNightLightsImport = function (file) { ... } to add the file to your media bin.
+  The file is a PDF named nightlights-artwork.pdf. file.nightlights holds width, height, pages, durations and images.
+  If you do not define it, the file is kept in window.nightLightsPending and a "nightlights-import" event fires on window.
+*/
+(function () {
+  var ALLOWED = ['https://nightlightsinc.github.io', 'https://www.nightlightsinc.org', 'https://nightlightsinc.org'];
+  window.addEventListener('message', function (e) {
+    if (ALLOWED.indexOf(e.origin) < 0) return;
+    var d = e.data || {};
+    if (d.type !== 'nightlights:import-pdf' || !(d.buffer instanceof ArrayBuffer)) return;
+    var file = new File([d.buffer], d.name || 'nightlights-artwork.pdf', { type: d.mime || 'application/pdf' });
+    var images = (d.images || []).map(function (buf, i) {
+      return new File([buf], 'page-' + (i + 1) + '.png', { type: 'image/png' });
+    });
+    file.nightlights = { width: d.width, height: d.height, pages: d.pages, durations: d.durations || [], images: images };
+    if (typeof window.onNightLightsImport === 'function') window.onNightLightsImport(file);
+    else { window.nightLightsPending = file; window.dispatchEvent(new CustomEvent('nightlights-import', { detail: file })); }
+    if (e.source) e.source.postMessage({ type: 'nightlights:import-received' }, e.origin);
+  });
+  if (window.opener) window.opener.postMessage({ type: 'nightlights:editor-ready' }, '*');
+})();
+</script>
 <script>
 (()=>{
 const $=s=>document.querySelector(s),mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c},
@@ -325,7 +372,7 @@ function compose(){
 }
 
 /* ---------- pointer input ---------- */
-const pt=e=>{const r=view.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height,p:cl(.5+((e.pointerType==='mouse'?.5:(e.pressure||.5))-.5)*PS)}};
+const pt=e=>{const[x,y]=toDoc(e.clientX,e.clientY);return{x,y,p:cl(.5+((e.pointerType==='mouse'?.5:(e.pressure||.5))-.5)*PS)}};
 function curMove(e){const bt=tool==='brush'||tool==='erase',d=Math.max(6,(bt?SZ*cur.p.s:/^(clone|smudge|blurT|sharpT|dodge|burn)$/.test(tool)?SZ:8)*Z);const c=$('#cur');c.style.display=ST.cur?'block':'none';c.style.width=c.style.height=d+'px';c.style.left=e.clientX+'px';c.style.top=e.clientY+'px'}
 function pickAt(e){compose();const p=pt(e),d=vx.getImageData(cl(p.x|0,0,W-1),cl(p.y|0,0,H-1),1,1).data;setColor('#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join(''))}
 view.onpointerdown=e=>{
@@ -335,7 +382,7 @@ view.onpointerdown=e=>{
  const bt=tool==='brush'||tool==='erase';
  if(tool==='pick'||(e.altKey&&bt)){pickAt(e);return}
  if(!bt){spDown(e);return}
- view.setPointerCapture(e.pointerId);pid=e.pointerId;stk=true;
+ capt(e.pointerId);pid=e.pointerId;stk=true;
  SC.getContext('2d').clearRect(0,0,W,H);
  if(!erase&&rcn[0]!==color){rcn=[color,...rcn.filter(c=>c!==color)].slice(0,14);sws('#rc',rcn)}
  painter=symPainter(SC.getContext('2d'));
@@ -586,7 +633,7 @@ function rstamp(s,x,y){
 /* tool pointer handling */
 function spDown(e){
  const p=pt(e),t=tool,lx=act.cv.getContext('2d'),cx=cl(p.x|0,0,W-1),cy=cl(p.y|0,0,H-1);
- pid=e.pointerId;view.setPointerCapture(pid);
+ pid=e.pointerId;capt(pid);
  if(t==='hand')sp={t,x:e.clientX,y:e.clientY,l:stage.scrollLeft,u:stage.scrollTop};
  else if(t==='clone'&&e.altKey){cloneSrc=p;cloneOff=null;ovDraw()}
  else if(t==='wand'){
@@ -776,8 +823,9 @@ on('#lfh',()=>doOp(()=>{act.cv=xf(act.cv,'h')}));on('#lfv',()=>doOp(()=>{act.cv=
 on('#lt',()=>{const v=prompt('Scale % and rotation in degrees, e.g. 80, 15','100, 0');if(!v)return;const[sc,r]=v.split(',').map(Number);if(!(sc>0))return;doOp(()=>{const n=mk(W,H),x=n.getContext('2d');x.translate(W/2,H/2);x.rotate((r||0)*Math.PI/180);x.scale(sc/100,sc/100);x.drawImage(act.cv,-W/2,-H/2);act.cv=n})});
 on('#swp',()=>{const a=color;setColor($('#c2').value);$('#c2').value=a});
 $('#tol').oninput=e=>$('#tolo').textContent=e.target.value;
-on('#fs',()=>{const el=document.documentElement;if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen()});
-document.onfullscreenchange=()=>$('#fs').textContent=document.fullscreenElement?'Exit full screen':'Full screen';
+const toggleFS=()=>{const el=document.documentElement;if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen()};
+on('#fs',toggleFS);on('#fs2',toggleFS);
+document.onfullscreenchange=()=>{const t=document.fullscreenElement?'Exit full screen':'Full screen';$('#fs').textContent=t;$('#fs2').textContent=t};
 
 document.addEventListener('pointerdown',e=>{const path=e.composedPath();document.querySelectorAll('.dd[open]').forEach(d=>{if(!path.includes(d))d.open=false})},true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-t],[data-x]');if(b){const d=b.closest('.dd');if(d)d.open=false}});
@@ -787,7 +835,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
 let paperOn=true,SM=.5,PS=1,lastEnd=null,GS=50;
 const DKEYS={b:'brush',e:'erase',i:'pick',h:'hand',v:'move',m:'selr',r:'sele',l:'sell',w:'wand',g:'bucket',a:'grad',u:'shape',t:'text',s:'clone'};
 let KEYS={...DKEYS};
-const DST={theme:'dark',acc:'#6f7cff',side:'r',sw:300,cur:true,wz:true,paper:'#fbfaf6',po:true,stage:'',keys:null};
+const DST={theme:'dark',acc:'#6f7cff',side:'r',sw:300,cur:true,wz:true,rside:'r',fsp:'bl',paper:'#fbfaf6',po:true,stage:'',keys:null};
 const ST={...DST};
 const THEMES={dark:['#1b1c1f','#25262a','#37383d','#e8e6e1','#9a9ba1','#2b2c30'],midnight:['#0b0f1a','#121a2b','#22304a','#dfe8ff','#8a9bbd','#0f1626'],light:['#f1f0ec','#ffffff','#d6d4cc','#1d1d1f','#6b6a66','#dcdad2'],contrast:['#000000','#111111','#ffffff','#ffffff','#dddddd','#1a1a1a']};
 const saveST=()=>{try{localStorage.setItem('sps',JSON.stringify(ST))}catch(e){}};
@@ -796,7 +844,7 @@ function applyST(){
  ['--bg','--pn','--ln','--tx','--dm','--stg'].forEach((k,i)=>r.setProperty(k,T[i]));
  if(ST.stage)r.setProperty('--stg',ST.stage);
  r.setProperty('--ac',ST.acc);
- paper=ST.paper;paperOn=ST.po;view.classList.toggle('tr',!ST.po);view.style.cursor=ST.cur?'none':'crosshair';$('#wz').checked=ST.wz!==false;
+ paper=ST.paper;paperOn=ST.po;view.classList.toggle('tr',!ST.po);view.style.cursor=ST.cur?'none':'crosshair';$('#wz').checked=ST.wz!==false;$('.app').classList.toggle('sl',ST.rside==='l');$('#fs').dataset.p=ST.fsp||'bl';placeFS();
  if(ST.keys)KEYS={...ST.keys};
  draw();
 }
@@ -810,9 +858,9 @@ function keysUI(){
 }
 const bindST=(id,key,get,after)=>{$(id).oninput=e=>{ST[key]=get(e.target);applyST();saveST();if(after)after()}};
 bindST('#sth','theme',e=>e.value);bindST('#sac','acc',e=>e.value);
-bindST('#wz','wz',e=>e.checked);bindST('#scu','cur',e=>e.checked);
+bindST('#wz','wz',e=>e.checked);bindST('#sro','rside',e=>e.value);bindST('#sfp','fsp',e=>e.value);bindST('#scu','cur',e=>e.checked);
 bindST('#spc','paper',e=>e.value,pvDraw);bindST('#spo','po',e=>e.checked);bindST('#ssg','stage',e=>e.value);
-$('#set').onclick=()=>{$('#sth').value=ST.theme;$('#sac').value=ST.acc;$('#scu').checked=ST.cur;$('#spc').value=ST.paper;$('#spo').checked=ST.po;$('#ssg').value=ST.stage||THEMES[ST.theme][5];keysUI();$('#sdg').showModal()};
+$('#set').onclick=()=>{$('#sro').value=ST.rside||'r';$('#sfp').value=ST.fsp||'bl';$('#sth').value=ST.theme;$('#sac').value=ST.acc;$('#scu').checked=ST.cur;$('#spc').value=ST.paper;$('#spo').checked=ST.po;$('#ssg').value=ST.stage||THEMES[ST.theme][5];keysUI();$('#sdg').showModal()};
 $('#sx').onclick=()=>$('#sdg').close();
 $('#srs').onclick=()=>{Object.assign(ST,DST);KEYS={...DKEYS};saveST();applyST();pvDraw();$('#sdg').close()};
 
@@ -935,15 +983,46 @@ $('#pf').onchange=async e=>{
 
 /* ---------- zoom, pan, move everything ---------- */
 let spaceDown=false;
-function zoomAt(nz,cx,cy){
- nz=cl(nz,.05,16);const r=view.getBoundingClientRect(),fx=(cx-r.left)/r.width,fy=(cy-r.top)/r.height;
- zoom(nz);const q=view.getBoundingClientRect();
- stage.scrollLeft+=q.left+fx*q.width-cx;stage.scrollTop+=q.top+fy*q.height-cy;
+const capt=id=>{try{view.setPointerCapture(id)}catch(e){}};
+let RA=0;
+function toDoc(cx,cy){
+ const r=view.getBoundingClientRect(),dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2),c=Math.cos(RA),s=Math.sin(RA);
+ return[(dx*c+dy*s)/Z+W/2,(-dx*s+dy*c)/Z+H/2];
 }
+function toClient(x,y){
+ const r=view.getBoundingClientRect(),ux=(x-W/2)*Z,uy=(y-H/2)*Z,c=Math.cos(RA),s=Math.sin(RA);
+ return[r.left+r.width/2+ux*c-uy*s,r.top+r.height/2+ux*s+uy*c];
+}
+function zoomAt(nz,cx,cy){
+ nz=cl(nz,.05,16);const[dx,dy]=toDoc(cx,cy);zoom(nz);const[qx,qy]=toClient(dx,dy);
+ stage.scrollLeft+=qx-cx;stage.scrollTop+=qy-cy;
+}
+function setRot(deg){
+ deg=((deg+180)%360+360)%360-180;RA=deg*Math.PI/180;
+ $('#board').style.transform=deg?`rotate(${deg}deg)`:'';$('#rot').value=deg;$('#rotv').textContent=Math.round(deg)+'°';
+}
+$('#rot').oninput=e=>setRot(+e.target.value);
+$('#rot0').onclick=()=>setRot(0);$('#rotv').ondblclick=()=>setRot(0);
+function placeFS(){document.documentElement.style.setProperty('--bt',(document.querySelector('.bar').offsetHeight+12)+'px')}
+addEventListener('resize',placeFS);
+function bakeRot(){
+ if(!RA)return;const c=Math.abs(Math.cos(RA)),sn=Math.abs(Math.sin(RA)),nw=Math.min(4096,Math.round(W*c+H*sn)),nh=Math.min(4096,Math.round(W*sn+H*c)),a=RA,ow=W,oh=H;
+ doOp(()=>{
+  const rot=(cv,m)=>{const n=mk(nw,nh),x=n.getContext('2d');
+   if(m){x.fillStyle='#000';x.fillRect(0,0,nw,nh)}
+   x.translate(nw/2,nh/2);x.rotate(a);
+   if(m){x.beginPath();x.rect(-ow/2,-oh/2,ow,oh);x.clip();x.clearRect(-ow/2-2,-oh/2-2,ow+4,oh+4)}
+   x.drawImage(cv,-ow/2,-oh/2);return n};
+  for(const l of layers){l.cv=rot(l.cv);if(l.mask)l.mask=rot(l.mask,1)}
+  W=nw;H=nh;SEL=null;
+ });
+ setRot(0);fit();
+}
+on('#rotb',bakeRot);
 function zoomUI(){const v=Math.round(Z*100);$('#zp').textContent=v+'%';$('#zr').value=cl(v,5,800)}
 const zc=f=>{const r=stage.getBoundingClientRect();zoomAt(Z*f,r.left+r.width/2,r.top+r.height/2)};
 $('#zr').oninput=e=>{const r=stage.getBoundingClientRect();zoomAt(e.target.value/100,r.left+r.width/2,r.top+r.height/2)};
-function startPan(e){pid=e.pointerId;view.setPointerCapture(pid);sp={t:'hand',x:e.clientX,y:e.clientY,l:stage.scrollLeft,u:stage.scrollTop}}
+function startPan(e){pid=e.pointerId;capt(pid);sp={t:'hand',x:e.clientX,y:e.clientY,l:stage.scrollLeft,u:stage.scrollTop}}
 addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName)){e.preventDefault();if(!spaceDown){spaceDown=true;view.style.cursor='grab'}}});
 addEventListener('keyup',e=>{if(e.code==='Space'){spaceDown=false;view.style.cursor=ST.cur?'none':'crosshair'}});
 function abortStroke(){
@@ -955,11 +1034,11 @@ function abortStroke(){
 const tps=new Map();let gs=null;
 stage.addEventListener('pointerdown',e=>{
  if(e.pointerType!=='touch')return;tps.set(e.pointerId,[e.clientX,e.clientY]);
- if(tps.size===2){abortStroke();const[a,b]=[...tps.values()];gs={d:Math.hypot(a[0]-b[0],a[1]-b[1])||1,z:Z,cx:(a[0]+b[0])/2,cy:(a[1]+b[1])/2};e.stopPropagation();e.preventDefault()}
+ if(tps.size===2){abortStroke();const[a,b]=[...tps.values()];gs={d:Math.hypot(a[0]-b[0],a[1]-b[1])||1,z:Z,cx:(a[0]+b[0])/2,cy:(a[1]+b[1])/2,a:Math.atan2(b[1]-a[1],b[0]-a[0]),r:RA};e.stopPropagation();e.preventDefault()}
 },true);
 stage.addEventListener('pointermove',e=>{
  if(!tps.has(e.pointerId))return;tps.set(e.pointerId,[e.clientX,e.clientY]);
- if(gs&&tps.size===2){e.stopPropagation();const[a,b]=[...tps.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]),cx=(a[0]+b[0])/2,cy=(a[1]+b[1])/2;zoomAt(gs.z*d/gs.d,cx,cy);stage.scrollLeft-=cx-gs.cx;stage.scrollTop-=cy-gs.cy;gs.cx=cx;gs.cy=cy}
+ if(gs&&tps.size===2){e.stopPropagation();const[a,b]=[...tps.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]),cx=(a[0]+b[0])/2,cy=(a[1]+b[1])/2;zoomAt(gs.z*d/gs.d,cx,cy);setRot((gs.r+(Math.atan2(b[1]-a[1],b[0]-a[0])-gs.a))*180/Math.PI);stage.scrollLeft-=cx-gs.cx;stage.scrollTop-=cy-gs.cy;gs.cx=cx;gs.cy=cy}
 },true);
 const tend=e=>{tps.delete(e.pointerId);if(tps.size<2)gs=null};
 stage.addEventListener('pointerup',tend,true);stage.addEventListener('pointercancel',tend,true);
@@ -1104,6 +1183,15 @@ async function frameCanvas(i){const bm=await getBmp(i),c=mk(bm.width,bm.height),
 $('#asb').onclick=async()=>{if(!FR.length)return alert('Add a frame first.');(await sheet()).toBlob(b=>dl(b,'storyboard.png'))};
 $('#asp').onclick=async()=>{if(!FR.length)return alert('Add a frame first.');dl(pdfBlob([await sheet()]),'storyboard.pdf')};
 $('#afp').onclick=async()=>{if(!FR.length)return alert('Add a frame first.');const pg=[];for(let i=0;i<FR.length;i++)pg.push(await frameCanvas(i));dl(pdfBlob(pg),'frames.pdf')};
+
+/* ---------- receiver code for the video editor (kept inside this file) ---------- */
+const rcvText=()=>$('#rcv').textContent.trim()+'\n';
+$('#rcc').onclick=async()=>{
+ const t=rcvText(),say=m=>$('#nlt').textContent=m;
+ try{await navigator.clipboard.writeText(t);say('Receiver code copied. Paste it into your video editor page.')}
+ catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch(x){}a.remove();say(ok?'Receiver code copied. Paste it into your video editor page.':'Copy was blocked, so I downloaded the receiver file instead.');if(!ok)dl(new Blob([t],{type:'text/javascript'}),'nightlights-editor-receiver.js')}
+};
+$('#rcd').onclick=()=>dl(new Blob([rcvText()],{type:'text/javascript'}),'nightlights-editor-receiver.js');
 
 /* ---------- send to the NightLights video editor ---------- */
 const NLU='https://nightlightsinc.github.io/video-editor/';
